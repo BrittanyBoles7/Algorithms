@@ -82,7 +82,7 @@ def poly_str_print(P):
 #print out runtimes for the two algorithm approaches
 def print_alg_times():
 
-    sizes = [2, 4, 8, 16, 32, 64, 128, 256]  #different polynomial sizes
+    sizes = [1, 5, 10, 25, 50, 75, 100, 200, 500, 800, 1000, 2000, 3500, 5000, 7000, 8500, 10000]  #different polynomial sizes
     naive_times = [] #store times for naive approach here
     dac_times = [] #store time for DaC approach here
 
