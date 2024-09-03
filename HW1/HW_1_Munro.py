@@ -2,6 +2,8 @@ import random as rand
 from matplotlib import pyplot as plt
 import time
 import os
+from scipy.interpolate import make_interp_spline
+import numpy as np
 
 #-------------------------------------------------------------------------------------------------------------------------------------------
 #Naive approach to polynomial multiplication
@@ -87,9 +89,9 @@ def print_alg_times():
     dac_times = [] #store time for DaC approach here
 
     for size in sizes:
-        #create random polynomials of the given size
-        poly_1 = [rand.randint(1, 10) for _ in range(size)] 
-        poly_2 = [rand.randint(1, 10) for _ in range(size)]
+        #create random polynomials of the given size/degree
+        poly_1 = [rand.randint(1, 50) for _ in range(size)] 
+        poly_2 = [rand.randint(1, 50) for _ in range(size)]
 
         #measure time for algorithm execution - Naive
         start_naive = time.time()
@@ -105,11 +107,17 @@ def print_alg_times():
         naive_times.append(end_naive - start_naive)
         dac_times.append(end_dac - start_dac)
 
+    #smooth lines
+    interp_sizes = np.linspace(min(sizes), max(sizes), 500)
+
+    naive_smooth = make_interp_spline(sizes, naive_times)(interp_sizes)
+    dac_smooth = make_interp_spline(sizes, dac_times)(interp_sizes)
+    
     #plot and save the results
     plt.figure(figsize=(10, 6))
-    plt.plot(sizes, naive_times, label="Naive Approach", marker="o")
-    plt.plot(sizes, dac_times, label="Divide-and-Conquer", marker="o")
-    plt.xlabel("Polynomial Size")
+    plt.plot(interp_sizes, naive_smooth, label="Naive Approach", marker="o")
+    plt.plot(interp_sizes, dac_smooth, label="Divide-and-Conquer", marker="o")
+    plt.xlabel("Polynomial Degree")
     plt.ylabel("Runtime (seconds)")
     plt.title("Polynomial Multiplication: Naive vs. Divide-and-Conquer")
     plt.legend()
@@ -150,7 +158,7 @@ def main():
     print("\n\nNew polynomial after multiplication (Naive approach): ")
     poly_str_print(poly_3)
     #print the new polynomial multiplied (DaC)
-    print("\nNew polynomial after multiplication (Simple Divide-and-Conquer (Strassen) approach): ")
+    print("\nNew polynomial after multiplication (Simple Divide-and-Conquer approach): ")
     poly_str_print(poly_4)
 
     #print the time for the naive approach
