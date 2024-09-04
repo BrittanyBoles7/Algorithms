@@ -56,8 +56,13 @@ def poly_mult_simple_dac(P, Q):
         product[i] += temp_poly_1[i]
 
     for i in range(len(temp_poly_2)):
-        product[i+m] += temp_poly_2[i] - temp_poly_1[i] - temp_poly_3[i]
-
+        product[i + m] += temp_poly_2[i]
+        if i < len(temp_poly_1):
+            product[i + m] -= temp_poly_1[i]
+        if i < len(temp_poly_3):
+            product[i + m] -= temp_poly_3[i]
+        else:
+            product[i + m] -= temp_poly_1[i] - temp_poly_3[i]
     for i in range(len(temp_poly_3)):
         product[i + 2 * m] += temp_poly_3[i]
 
@@ -136,8 +141,8 @@ def print_alg_times():
 def main():
 
     #test the two algorithms
-    poly_1 = [1,3,1]#[8,3,1,15,0,9] #polynomials are sorted from lowest to highest order (ex: 8 + 3x + x^2 + 6x^3)
-    poly_2 = [5,1,2]#[6,3,2,8,1,13] #(ex: 1 + 2x + 4x^2)
+    poly_1 = [8,3,1,15] #polynomials are sorted from lowest to highest order (ex: 8 + 3x + x^2 + 6x^3)
+    poly_2 = [6,3,2,8] #(ex: 1 + 2x + 4x^2)
 
     #print out the polynomials
     print("Polynomial #1: ")
