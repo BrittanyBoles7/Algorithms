@@ -4,7 +4,7 @@ import time
 import os
 from scipy.interpolate import make_interp_spline
 import numpy as np
-
+# Group: Madie Munro, Redempta Manzi, Brittany Boles
 #-------------------------------------------------------------------------------------------------------------------------------------------
 #Naive approach to polynomial multiplication
 def poly_mult_naive(P, Q):
