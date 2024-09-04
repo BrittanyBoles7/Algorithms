@@ -4,7 +4,8 @@ import time
 import os
 from scipy.interpolate import make_interp_spline
 import numpy as np
-# Group: Madie Munro, Redempta Manzi, Brittany Boles
+
+# Group: Brittany Boles, Redempta Manzi, Madie Munro
 #-------------------------------------------------------------------------------------------------------------------------------------------
 #Naive approach to polynomial multiplication
 def poly_mult_naive(P, Q):
@@ -42,21 +43,20 @@ def poly_mult_simple_dac(P, Q):
     Q_lower = Q[:m]
     Q_higher = Q[m:]
 
-    #use recursion to multiply the split polynomials (similar to Strassen's algorithm for matrix multiplication)
+    #use recursion to multiply the split polynomials
     temp_poly_1 = poly_mult_simple_dac(P_lower, Q_lower) #equivilent to A_0(x)B_0(x) in the DaC alg
-    temp_poly_2 = poly_mult_simple_dac([i + j for i, j in zip(P_lower, P_higher)], [i + j for i, j in zip(Q_lower, Q_higher)]) #equivilent to x^(n/2)*(A_1(x)B_0(x) + A_0(x)B_1(x)) in the DaC alg
+    temp_poly_2 = poly_mult_simple_dac([i + j for i, j in zip(P_lower, P_higher)], [i + j for i, j in zip(Q_lower, Q_higher)]) #equivilent to x^(n/2)*(A_1(x)+A_0(x)*B_1(x)+B_0(x)) in the DaC alg
     temp_poly_3 = poly_mult_simple_dac(P_higher, Q_higher) #equivilent to x^n*A_1(x)B_1(x) in the DaC alg
 
     #initialize the product polynomial
     product = [0] * (2 * n - 1)
 
-    #combine the recursed solutions into one product
+    #combine the recursed solutions into one product (x^n*A_1(x)B_1(x) + x^(n/2)*(A_1(x)+A_0(x)*B_1(x)+B_0(x) - A_0(x)B_0(x) - A_1(x)B_1(x)) + A_0(x)B_0(x))
 
     for i in range(len(temp_poly_1)):
         product[i] += temp_poly_1[i]
-
     for i in range(len(temp_poly_2)):
-        product[i + m] += temp_poly_2[i]
+        product[i + m] += temp_poly_2[i] #this section is the A_0(x)B_0(x) and A_1(x)B_1(x) subtracted from the calculation in temp_poly_2
         if i < len(temp_poly_1):
             product[i + m] -= temp_poly_1[i]
         if i < len(temp_poly_3):
@@ -66,7 +66,7 @@ def poly_mult_simple_dac(P, Q):
     for i in range(len(temp_poly_3)):
         product[i + 2 * m] += temp_poly_3[i]
 
-    #remove padding (otherwise it adds an extra polynomial 0x^n+1)
+    #remove padding if present (otherwise it adds an extra polynomial 0x^n+1)
     while len(product) > 1 and product[-1] == 0:
         product.pop()
 
@@ -132,7 +132,7 @@ def print_alg_times():
     plt.grid(True)
 
     path = os.path.dirname(__file__)
-    file = "runtimes_munro.png"
+    file = "runtimes_HW1.png"
     plt.savefig(os.path.join(path, file))
     plt.show()
 
@@ -141,8 +141,8 @@ def print_alg_times():
 def main():
 
     #test the two algorithms
-    poly_1 = [8,3,1,15] #polynomials are sorted from lowest to highest order (ex: 8 + 3x + x^2 + 6x^3)
-    poly_2 = [6,5,2,8] #(ex: 1 + 2x + 4x^2)
+    poly_1 = [8,3,1,15] #polynomials are sorted from lowest to highest order (ex: 8 + 3x + x^2 + 15x^3)
+    poly_2 = [6,5,2,8] #(ex: 6 + 5x + x^2 + 8x^3)
 
     #print out the polynomials
     print("Polynomial #1: ")
