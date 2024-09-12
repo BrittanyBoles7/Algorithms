@@ -2,7 +2,7 @@
 
 smallest_median_value <- function(A, B, n) {
     if (n == 1) {
-        return(min(A[1], B[1]))  #base case
+        return(min(A[n], B[n]))  #base case
     }
   
     k <- floor(n/2) #starting median
