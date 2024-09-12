@@ -19,3 +19,9 @@ B <- c(2, 4, 6, 8)
 n <- length(A)
 
 smallest_median_value(A, B, n)
+
+A <- c(6, 8, 13, 15, 19)
+B <- c(3, 7, 10, 11, 16)
+n <- length(A)
+
+smallest_median_value(A, B, n)
