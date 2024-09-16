@@ -1,6 +1,6 @@
 #modified count sort
 
-def count_sort(input_array):
+def bucket_sort(input_array):
 
     max_elmt = max(input_array) #calculate the min value in the array
     min_elmt = min(input_array) #calculate the max value in the array
@@ -33,6 +33,6 @@ def count_sort(input_array):
 
 if __name__ == "__main__":
     input_array = [5,9,4,10,8,7,15,13]
-    output_array = count_sort(input_array)
+    output_array = bucket_sort(input_array)
     for num in output_array:
         print(num, end=" ")
