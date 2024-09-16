@@ -6,11 +6,12 @@ smallest_median_value <- function(A, B) {
         return(min(A[n], B[n]))  #base case
     }
   
-    k <- floor(n/2) #starting median
+    k <- floor(n/2) #starting median index
     
+    #if the median at k for A is less than the median at k for B, look through the k+1th digits in A and the first kth digits in B for the median
     if (A[k] < B[k]) {
         return(smallest_median_value(A[(k+1):n], B[1:(n-k)]))
-    } else {
+    } else { #if the median at k for B is less than the median at k for A, look through the k+1th digits in B and the first kth digits in A for the median
         return(smallest_median_value(A[1:(n-k)], B[(k+1):n]))
     }
 }
