@@ -1,4 +1,5 @@
 # calculate the nth smallest median between two arrays of the same size
+# code authors: Brittany Boles, Redempta Manzi, Madie Munro
 
 smallest_median_value <- function(A, B) {
   n <- length(A)  

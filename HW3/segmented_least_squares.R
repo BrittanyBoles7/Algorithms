@@ -1,0 +1,155 @@
+##Dynamic Programming Solution for Segmented Least Squares
+#
+#Code Authors: Madie Munro, Redempta Manzi, Brittany Boles
+
+#-----------------------------------------------------------------------------------------------
+
+library(ggplot2)
+library(gridExtra)
+library(scales)
+
+#function to calculate least squares error for fitting a line between two points
+least_squares_error <- function(x, y, i, j) {
+  if (i == j) return(0)
+  x_segment <- x[i:j]
+  y_segment <- y[i:j]
+  
+  model <- lm(y_segment ~ x_segment)  #use linear model to fit data
+  y_pred <- predict(model, data.frame(x_segment))  #predict y values for SSE
+  return(sum((y_segment - y_pred)^2))
+}
+
+#-----------------------------------------------------------------------------------------------
+
+#segmented least squares for a fixed number of segments
+segmented_least_squares <- function(x, y, k) {
+  n <- length(x)
+  
+  #initialize cost matrix
+  cost <- matrix(0, n, n)
+  
+  #compute the least squares error for each segment and store in cost matrix
+  for (i in 1:(n-1)) {
+    for (j in (i+1):n) {
+      cost[i, j] <- least_squares_error(x, y, i, j)
+    }
+  }
+  
+  #matrix to store minimum error for each segment and points
+  errs <- matrix(Inf, k+1, n+1)
+  errs[1,] <- 0  # Base case
+  
+  #backtrack array to store the index where the optimal partition occurs
+  partition <- matrix(0, k+1, n+1)
+  
+  for (i in 2:(k+1)) {
+    for (p in 2:n) {
+      for (j in 1:(p-1)) {
+        error <- errs[i-1, j] + cost[j, p]
+        if (error < errs[i, p]) {
+          errs[i, p] <- error
+          partition[i, p] <- j
+        }
+      }
+    }
+  }
+  
+  #Find k partitions
+  segments <- numeric(k+1)
+  segments[k+1] <- n
+  for (i in k:1) {
+    segments[i] <- partition[i, segments[i+1]]
+  }
+  
+  list(errs = errs, segments = segments)
+}
+
+#-----------------------------------------------------------------------------------------------
+
+#plot the points and the fitted line segments
+plot_segments <- function(x, y, segments) {
+  plot_data <- data.frame(x = x, y = y)
+  p <- ggplot(plot_data, aes(x, y)) + 
+    geom_point()
+    # geom_point() + 
+    # geom_line(linetype = "dashed", color = "black")
+  
+  #define dynamic colors based on the number of segments
+  segment_count <- length(segments) - 1
+  colors <- scales::hue_pal()(segment_count)
+  
+  #plot each segment with fitted regression line
+  for (i in 1:segment_count) {
+    x_segment <- x[segments[i]:segments[i+1]]
+    y_segment <- y[segments[i]:segments[i+1]]
+    
+    model <- lm(y_segment ~ x_segment)  #use linear model to fit data
+    y_pred <- predict(model, data.frame(x_segment))  #predict y values
+    
+    #create a dataframe for the segment and plot it 
+    segment_data <- data.frame(x = x_segment, y = y_pred)
+    p <- p + geom_line(data = segment_data, aes(x = x, y = y), color = colors[i], linewidth = 1.2)
+  }
+  
+  #add labels and display plot
+  p + labs(title = "Segmented Least Squares Fit", x = "X", y = "Y")
+}
+
+#test and plot results
+#--------PLOT 1------------------------------------------------------
+set.seed(1234)
+n <- 100
+x <- seq(1, n, length.out = n)
+y <- c(1:20, sqrt(3) * 1:20, 1.33 * 1:20, .5 * (1:20), -4 * 1:20)  
+
+k <- 10
+result <- segmented_least_squares(x, y, k)
+
+plot1 <- plot_segments(x, y, result$segments)
+
+#--------PLOT 2------------------------------------------------------
+set.seed(2345)
+n2 <- 50
+x2 <- seq(1, n2, length.out = n2)
+y2 <- c(1:10, 3 * 1:10, 1.33 * 1:20, .0001 * (1:10))  
+
+k2 <- 6
+result2 <- segmented_least_squares(x2, y2, k2)
+
+plot2 <- plot_segments(x2, y2, result2$segments)
+
+#--------PLOT 3------------------------------------------------------
+set.seed(123)
+n3 <- 150
+x3 <- seq(1, n3, length.out = n3)
+y3 <- c(1:30, -5 * 1:30, 2.5 * 1:20, .01 * 1:30, 1:10, log(2.71) * 1:30)  
+
+k3 <- 8
+result3 <- segmented_least_squares(x3, y3, k3)
+
+plot3 <- plot_segments(x3, y3, result3$segments)
+
+#--------PLOT 4------------------------------------------------------
+set.seed(234)
+n4 <- 20
+x4 <- seq(1, n4, length.out = n4)
+y4 <- c(sqrt(15) * 1:20)  
+
+k4 <- 5
+result4 <- segmented_least_squares(x4, y4, k4)
+
+plot4 <- plot_segments(x4, y4, result4$segments)
+
+#display all plots
+grid.arrange(plot1, plot2, plot3, plot4, ncol = 2, nrow = 2)
+
+
+
+
+
+
+
+
+
+
+                                        
