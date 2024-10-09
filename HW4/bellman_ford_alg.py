@@ -2,6 +2,9 @@
 # 
 # Code Authors: Madie Munro, Redempta Manzi, Brittany Boles
 #
+import requests
+import pandas as pd
+import numpy as np
 
 # Graph Class
 class Graph:
@@ -67,10 +70,22 @@ class Graph:
                 self.printNegCycles(v, predecessor) 
                 return
 
+def create_exchange_rate_graph(df):
+    graph = Graph(len(df.index))  
+    currency_names = {currency: index for index, currency in enumerate(df.index)}  # Index currencies
+
+    # Add edges with weights (negative log of exchange rate)
+    for currency in df.index:
+        for target_currency, rate in df.loc[currency].items():
+            # if rate != 0:  # Avoid division by zero
+                if target_currency in currency_names:
+                    graph.addEdge(currency_names[currency], currency_names[target_currency], rate)
+
+    return graph, currency_names  # Return the graph and the currency names
+
 def main():
 
     # Basic Example
-
     graph = Graph(5)
 
     graph.addEdge(0,1,2)
@@ -107,6 +122,32 @@ def main():
     graph_neg_cycle.addEdge(8, 9, 2)
 
     graph_neg_cycle.BellmanFordAlg(0)
+
+    print("\n\n")
+
+    #------------------------------------------------------------------------------------------------------------
+
+    # Check currency arbitrage
+    exchange_rates = {}  
+
+    # Make API calls (TODO: remove API key when submitting)
+    for currency in ["USD", "AUD", "EUR", "CAD", "CNY", "GBP", "JPY", "AED", "BRL", "HKD", "INR", "KRW", "MXN", "RUB", "RWF", "ZAR"]: # Select currencies to graph
+        url = f'https://v6.exchangerate-api.com/v6/443638d25455018c02fb4dcc/latest/{currency}' 
+        response = requests.get(url)
+        data = response.json()
+
+        # Store rates in dictionary
+        if "conversion_rates" in data:
+            exchange_rates[currency] = data["conversion_rates"]
+
+    # Convert rate dictionary to Dataframe
+    currency_exchange_rates = pd.DataFrame(exchange_rates).T 
+
+    # Create graph from exchange data
+    curr_ex_graph, currency_names = create_exchange_rate_graph(currency_exchange_rates)
+
+    # Run Bellman-Ford Alg
+    curr_ex_graph.BellmanFordAlg(currency_names["JPY"])
 
 if __name__ == "__main__":
     main()
