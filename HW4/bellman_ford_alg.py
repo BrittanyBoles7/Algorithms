@@ -1,4 +1,4 @@
-# Bellman-Ford Algorithm with Negative Cycle Detection
+# Bellman-Ford Algorithm with Negative Cycle and Arbitrage Detection
 # 
 # Code Authors: Madie Munro, Redempta Manzi, Brittany Boles
 #
@@ -10,7 +10,7 @@ import numpy as np
 class Graph:
 
     # Initialize Graph object
-    def __init__(self, verts):
+    def __init__(self,verts):
         self.V = verts
         self.G = []
 
@@ -19,7 +19,7 @@ class Graph:
         self.G.append([u,v,w])
 
     # Print utility function to format path distance nicely
-    def printPath(self, d):
+    def printPath(self,d):
         print("Distance from start to end vertex of the given graph:")
         for i in range(self.V):
             print("{0}\t\t{1}".format(i, d[i]))
@@ -47,7 +47,7 @@ class Graph:
         print("Negative cycle found: ", cycle)
 
     # Print utility function to output arbitrage detected
-    def printArbitrage(self,s,pred, currency):
+    def printArbitrage(self,s,pred,currency):
 
         # Initialize the start of the cycle
         cycle_start = s
@@ -69,7 +69,7 @@ class Graph:
         print("Arbitrage found: ", [currency[i] for i in cycle])
 
     # Bellman-Ford Algorithm (for Negative Cycle Detection)
-    def BellmanFordAlg(self, start):
+    def BellmanFordAlg(self,start):
         distance = [float("Inf")] * self.V # Create distance array
         distance[start] = 0 # Set distance from starting vertex to 0
         predecessor = [-1] * self.V # Set up predecessor vertex array
@@ -82,7 +82,7 @@ class Graph:
                     distance[v] = distance[u] + w
                     predecessor[v] = u
 
-        # print all distances
+        # Print all distances
         self.printPath(distance)
 
         # Check for negative cycles
@@ -91,8 +91,9 @@ class Graph:
                 print("A negative cycle was found")
                 self.printNegCycles(v, predecessor) 
                 return
+
     # Bellman-Ford Algorithm (for Arbitrage Detection)
-    def BellmanFordArbitrage(self, start, currency):
+    def BellmanFordArbitrage(self,start,currency):
         distance = [float("Inf")] * self.V # Create distance array
         distance[start] = 0 # Set distance from starting vertex to 0
         predecessor = [-1] * self.V # Set up predecessor vertex array
@@ -105,7 +106,7 @@ class Graph:
                     distance[v] = distance[u] + w
                     predecessor[v] = u
 
-        # print all distances
+        # Print all distances
         self.printPath(distance)
 
         # Check for arbitrage opportunity
@@ -126,7 +127,7 @@ def create_exchange_rate_graph(df):
                 if rate > 0 and target_currency in currency_names:
                     graph.addEdge(currency_names[currency], currency_names[target_currency], -np.log(rate)) #reverse log negative cycles to detect arbitrage
 
-    return graph, currency_names, currency_index  # Return the graph and the currency names
+    return graph, currency_names, currency_index  # Return the graph and the currency names and index
 
 def main():
 
@@ -176,7 +177,7 @@ def main():
     exchange_rates = {}  
 
     # Make API calls (TODO: remove API key when submitting)
-    for currency in ["USD", "AUD", "EUR", "GBP", "RWF", "JPY", "HKD", "INR", "KRW", "CAD", "CNY", "MXN", "RUB", "ZAR", "AED", "BRL"]: # Select currencies to graph
+    for currency in ["AUD", "HKD", "INR", "KRW", "CAD", "CNY", "MXN", "RUB", "ZAR", "AED", "EUR", "GBP", "RWF", "JPY", "USD", "BRL"]: # Select currencies to graph
         url = f'https://v6.exchangerate-api.com/v6/443638d25455018c02fb4dcc/latest/{currency}' 
         response = requests.get(url)
         data = response.json()
