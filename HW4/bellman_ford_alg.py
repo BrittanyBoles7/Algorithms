@@ -178,7 +178,7 @@ def main():
 
     # Make API calls (TODO: remove API key when submitting)
     for currency in ["AUD", "HKD", "INR", "KRW", "CAD", "CNY", "MXN", "RUB", "ZAR", "AED", "EUR", "GBP", "RWF", "JPY", "USD", "BRL"]: # Select currencies to graph
-        url = f'https://v6.exchangerate-api.com/v6/443638d25455018c02fb4dcc/latest/{currency}' 
+        url = f'https://v6.exchangerate-api.com/v6/[API KEY HERE]/latest/{currency}' 
         response = requests.get(url)
         data = response.json()
 
