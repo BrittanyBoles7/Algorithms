@@ -1,3 +1,7 @@
+# network flow for Money Reconciliation
+# 
+# Code Authors: Madie Munro, Redempta Manzi, Brittany Boles
+#
 import numpy as np
 import networkx as nx
 
