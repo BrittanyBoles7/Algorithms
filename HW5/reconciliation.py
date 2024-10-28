@@ -7,17 +7,24 @@ import networkx as nx
 
 
 #build flow network, then calculate the number of checks to be written and how much should be on them
-def reconciliation_checks(imbalance, amounts, n):
+def reconciliation_checks(amounts, n):
+
+    #calculate the imbalance
+    I = [0] * n
+    for i in range(n):
+        for j in range(n):
+            I[i] += amounts[j, i] - amounts[i, j]
+
     #construct graph using networkx package
     G = nx.DiGraph()
     src, sink = "s", "t" #source and sink
 
     #add edges between src and sink based on imbalances calculated between friends
     for i in range(n):
-        if imbalance[i] > 0:
-            G.add_edge(src, i, capacity=imbalance[i])
-        elif imbalance[i] < 0:
-            G.add_edge(i, sink, capacity=-imbalance[i])
+        if I[i] > 0:
+            G.add_edge(src, i, capacity=I[i])
+        elif I[i] < 0:
+            G.add_edge(i, sink, capacity=-I[i])
 
     #add edges between friends based on amounts owed
     for i in range(n):
@@ -69,14 +76,9 @@ def main():
     #close file
     roommate_IOU.close()
 
-    #calculate the imbalance
-    I = [0] * friends
-    for i in range(friends):
-        for j in range(friends):
-            I[i] += A[j, i] - A[i, j]
 
     #determine number of checks to distribute (using flow network)
-    checks = reconciliation_checks(I, A, friends)
+    checks = reconciliation_checks(A, friends)
 
     #print checks needed between friends
     if checks:
