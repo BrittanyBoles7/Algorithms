@@ -21,10 +21,10 @@ def reconciliation_checks(amounts, n):
 
     #add edges between src and sink based on imbalances calculated between friends
     for i in range(n):
-        if I[i] > 0:
-            G.add_edge(src, i, capacity=I[i])
-        elif I[i] < 0:
-            G.add_edge(i, sink, capacity=-I[i])
+        if I[i] < 0:
+            G.add_edge(src, i, capacity=-I[i])
+        elif I[i] > 0:
+            G.add_edge(i, sink, capacity=I[i])
 
     #add edges between friends based on amounts owed
     for i in range(n):
