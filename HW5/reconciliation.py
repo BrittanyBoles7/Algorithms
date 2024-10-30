@@ -54,7 +54,8 @@ def main():
     friend_names = {0: "Madie", 1: "Brittany", 2: "Yvette", 3: "Emma", 4: "Mark", 5: "Redempta", 6: "Aidan"}  #friends
 
     #read in imbalance data
-    roommate_IOU = open("C:/Users/madie/OneDrive/Desktop/CSCI 532/Algorithms/HW5/roommate_check_reconciliation_imbalanced.txt", "r")
+    #roommate_IOU = open("C:/Users/madie/OneDrive/Desktop/CSCI 532/Algorithms/HW5/roommate_check_reconciliation_imbalanced.txt", "r")
+    roommate_IOU = open("C:/Users/madie/OneDrive/Desktop/CSCI 532/Algorithms/HW5/roommate_check_reconciliation.txt", "r")
 
     #split entities in file, then calculate amounts each friend owes each other
     for line in roommate_IOU.readlines():

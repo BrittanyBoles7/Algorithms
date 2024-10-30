@@ -16,27 +16,36 @@ def min_cycle(graph, cycle):
             graph[edge[0]][edge[1]]['weight']
             if graph.has_edge(edge[0], edge[1])
             else graph[edge[1]][edge[0]]['weight']
+            if graph.has_edge(edge[1], edge[0])
+            else float('inf')
         )
     )
-    #determine minimum cost
-    min_cost = (
-        graph[min_edge[0]][min_edge[1]]['weight']
-        if graph.has_edge(min_edge[0], min_edge[1])
-        else graph[min_edge[1]][min_edge[0]]['weight']
-    )
+    #determine minimum cost (account for both directions)
+    min_cost = 0
+    if graph.has_edge(min_edge[0], min_edge[1]):
+        min_cost = graph[min_edge[0]][min_edge[1]]['weight']
+    else:
+        min_cost = graph[min_edge[1]][min_edge[0]]['weight']
     
     #adjust weights in cycle by removing the minimum cost edge (zero)
     for u, v in cycle:
-        if (u, v) == min_edge:
-            graph[u][v]['weight'] -= min_cost
-            if graph[u][v]['weight'] == 0:
-                graph.remove_edge(u, v)
+        if (u, v) == min_edge or (v, u) == min_edge:
+            #account for both directions
+            if graph.has_edge(u, v):
+                graph[u][v]['weight'] -= min_cost
+                if graph[u][v]['weight'] == 0:
+                    graph.remove_edge(u, v)
+            elif graph.has_edge(v, u):
+                graph[v][u]['weight'] -= min_cost
+                if graph[v][u]['weight'] == 0:
+                    graph.remove_edge(v, u)
         elif graph.has_edge(u, v):
             graph[u][v]['weight'] -= min_cost
             if graph[u][v]['weight'] == 0:
                 graph.remove_edge(u, v)
         elif graph.has_edge(v, u):
             graph[v][u]['weight'] += min_cost
+
 
 def find_min_transactions(A,n):
 
@@ -50,6 +59,7 @@ def find_min_transactions(A,n):
         for j in range(n):
             if A[i,j] > 0:
                 if A[j,i] > 0:
+                    #if an edge already exists, update the edge to have the weight equal to the imbalance between persons i and j
                     if A[i,j] > A[j,i]:
                         G.add_edge(i, j, weight = (A[i,j] - A[j,i])) #weights are the imbalaces between roomates, or just the amount owed
                     elif A[i,j] < A[j,i]:
@@ -57,7 +67,7 @@ def find_min_transactions(A,n):
                 else:
                     G.add_edge(i, j, weight = A[i,j])
     
-    #C=convert DiGraph to Undirected Graph
+    #convert DiGraph to Undirected Graph
     G_undir = G.to_undirected()
 
     #detect undirected cycles, then find minimum cycle in original graph
@@ -83,7 +93,8 @@ def main():
     friend_names = {0: "Madie", 1: "Brittany", 2: "Yvette", 3: "Emma", 4: "Mark", 5: "Redempta", 6: "Aidan"}  #friends
 
     #read in imbalance data
-    roommate_IOU = open("C:/Users/madie/OneDrive/Desktop/CSCI 532/Algorithms/HW5/roommate_check_reconciliation_imbalanced.txt", "r")
+    #roommate_IOU = open("C:/Users/madie/OneDrive/Desktop/CSCI 532/Algorithms/HW5/roommate_check_reconciliation_imbalanced.txt", "r")
+    roommate_IOU = open("C:/Users/madie/OneDrive/Desktop/CSCI 532/Algorithms/HW5/roommate_check_reconciliation.txt", "r")
 
     #split entities in file, then calculate amounts each friend owes each other
     for line in roommate_IOU.readlines():
